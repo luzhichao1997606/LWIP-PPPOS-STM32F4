@@ -5,16 +5,17 @@
  * @Author: lzc
  * @Date: 2020-09-10 10:50:39
  * @LastEditors: lzc
- * @LastEditTime: 2020-09-10 11:02:46
+ * @LastEditTime: 2020-09-10 11:06:40
 -->
 # LWIP-PPPOS-STM32F4
 LWIP+STM32F429+PPPOS
 ***
-### 平  台: STM32F429VET6
-### 编译器: KEIL5
-### 协议栈：LWIP
-### 模块：4G移远EC200S-CN
-### 效果
+#### 平  台: STM32F429VET6
+#### 编译器: KEIL5
+#### 协议栈：LWIP
+#### 模块：4G移远EC200S-CN
+#### 配置：串口6为连接到模块，串口4为调试输出
+#### 效果
 >
 ```
 status_cb: Connected
