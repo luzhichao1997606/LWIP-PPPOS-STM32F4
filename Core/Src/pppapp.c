@@ -151,10 +151,8 @@ void PppRead(void const* argument)
         {
             if (QueueNotEmpty(&seqCQueue))
             {
-                printf("22");
                 if (QueueDelete(&seqCQueue, &ppp_data))
                 {
-                    printf("33");
                     PRINT(true, ppp_data.index, ppp_data.size);
                     taskENTER_CRITICAL();
                     pppos_input_tcpip(ppp, ppp_data.index, ppp_data.size);  // 0x7e

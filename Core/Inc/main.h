@@ -1,12 +1,3 @@
-/*
- * @FileName:
- * @Description:
- * @Version:
- * @Author: lzc
- * @Date: 2020-09-07 17:58:35
- * @LastEditors: lzc
- * @LastEditTime: 2020-09-08 19:25:22
- */
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************

@@ -79,10 +79,8 @@ void UartSendData(UART_HandleTypeDef* huart, uint8_t* pdata, uint16_t Length)
 
 void UartIdleReceiveData(UART_HandleTypeDef* huart, SeqCQueue* Queue)
 {
-    printf("Queue");
     if ((__HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE) != RESET))
     {
-        printf("Queue init");
         __HAL_UART_CLEAR_IDLEFLAG(huart);
         HAL_UART_DMAStop(huart);
         uint32_t temp = hdma_usart6_rx.Instance->NDTR;
@@ -90,7 +88,6 @@ void UartIdleReceiveData(UART_HandleTypeDef* huart, SeqCQueue* Queue)
         {
             cache.size  = (LEFTRAMSIZE - temp);
             cache.index = Queue->currentCache;
-            printf("Queue Add");
             if (QueueAppend(Queue, cache))
             {
                 Queue->leftram += cache.size;

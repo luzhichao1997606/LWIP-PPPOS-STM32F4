@@ -139,7 +139,6 @@ int main(void)
     MX_DMA_Init();
     MX_USART6_UART_Init();
     MX_UART4_Init();
-
     /* USER CODE BEGIN 2 */
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
     HAL_UART_Receive_IT(&huart6, ( uint8_t* )pData, 1);
@@ -185,6 +184,7 @@ int main(void)
     while (1)
     {
         /* USER CODE END WHILE */
+
         /* USER CODE BEGIN 3 */
     }
     /* USER CODE END 3 */
@@ -360,7 +360,6 @@ static void MX_GPIO_Init(void)
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void const* argument)
 {
-    DataType debug_data;
     /* USER CODE BEGIN 5 */
     printf("INIT LWIP\r\n");
     lwip_comm_init();
