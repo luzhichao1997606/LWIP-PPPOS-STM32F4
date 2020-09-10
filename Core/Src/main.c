@@ -368,16 +368,8 @@ void StartDefaultTask(void const* argument)
     /* Infinite loop */
     for (;;)
     {
-        // if (QueueNotEmpty(&seqCQueue))
-        // {
-        //     if (QueueDelete(&seqCQueue, &debug_data))
-        //     {
-        //         HAL_UART_Transmit(&huart4, debug_data.index, debug_data.size, 100);
-        //     }
-        // }
-        // printf("Runnning\r\n");
-        // HAL_UART_Transmit(&huart6, "ATI\r\n", sizeof("ATI\r\n"), 100);
-        osDelay(1000);
+        printf("idle Task is Runnning\r\n");
+        osDelay(10000);
     }
     /* USER CODE END 5 */
 }

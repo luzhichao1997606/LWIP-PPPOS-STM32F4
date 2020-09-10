@@ -1,5 +1,7 @@
 #include "pppapp.h"
 
+void example_publish(void);
+
 err_t ppposnetif_init(struct netif* netif);
 err_t tcp_Client_connected(void* arg, struct tcp_pcb* pcb, err_t err);
 
@@ -244,53 +246,52 @@ void connect_to_server(void const* argument)
         osDelay(10);
     }
 
-    //    void mqtt_init( void );
-    //    mqtt_init();
-    //    for( ;; ){
-    //        osDelay( 500 );
-    //        #include "mqtt.h"
-    //        void example_publish( void );
-    //        example_publish( );
-    //    }
-
-    create_tcp();
-    char data[32] = { 0 };
+    void mqtt_init(void);
+    mqtt_init();
     for (;;)
     {
-        printf("------------------------------TCP STATE:%d----------------\r\n", pcb->state);
-        if (ppp_conn_success && (pcb->state == 0 || pcb == NULL))
-        {
-            if (pcb != NULL)
-            {
-                tcp_close(pcb);
-            }
-            create_tcp();
-        }
-        if (!ppp_conn_success && pcb != NULL)
-        {
-            if (pcb != NULL)
-            {
-                tcp_close(pcb);
-                pcb = NULL;
-            }
-        }
-
-        if (pcb != NULL && pcb->state == 4)
-        {
-            static uint32_t i = 0;
-            memset(data, 0, 32);
-            if (sprintf(data, "%d\r\n", i++) > 0)
-            {
-                while (ERR_OK != tcp_write(pcb, data, strlen(data), TCP_WRITE_FLAG_COPY))
-                    osDelay(10);
-                while (ERR_OK != tcp_write(pcb, "123456789abcdefghijklmnopqrstuvwxyz\r\n", strlen("123456789abcdefghijklmnopqrstuvwxyz\r\n"), TCP_WRITE_FLAG_COPY))
-                    osDelay(10);
-                printf("%s\r\n", data);
-            }
-            osDelay(5000);
-        }
-        osDelay(1000);
+        example_publish();
+        osDelay(5000);
     }
+
+    // create_tcp();
+    // char data[32] = { 0 };
+    // for (;;)
+    //{
+    //    printf("------------------------------TCP STATE:%d----------------\r\n", pcb->state);
+    //    if (ppp_conn_success && (pcb->state == 0 || pcb == NULL))
+    //    {
+    //        if (pcb != NULL)
+    //        {
+    //            tcp_close(pcb);
+    //        }
+    //        create_tcp();
+    //    }
+    //    if (!ppp_conn_success && pcb != NULL)
+    //    {
+    //        if (pcb != NULL)
+    //        {
+    //            tcp_close(pcb);
+    //            pcb = NULL;
+    //        }
+    //    }
+    //
+    //    if (pcb != NULL && pcb->state == 4)
+    //    {
+    //        static uint32_t i = 0;
+    //        memset(data, 0, 32);
+    //        if (sprintf(data, "%d\r\n", i++) > 0)
+    //        {
+    //            while (ERR_OK != tcp_write(pcb, data, strlen(data), TCP_WRITE_FLAG_COPY))
+    //                osDelay(10);
+    //            while (ERR_OK != tcp_write(pcb, "123456789abcdefghijklmnopqrstuvwxyz\r\n", strlen("123456789abcdefghijklmnopqrstuvwxyz\r\n"), TCP_WRITE_FLAG_COPY))
+    //                osDelay(10);
+    //            printf("%s\r\n", data);
+    //        }
+    //        osDelay(5000);
+    //    }
+    //    osDelay(1000);
+    //}
 }
 
 void tcp_connect_init(void)
