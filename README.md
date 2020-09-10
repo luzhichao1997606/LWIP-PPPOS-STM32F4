@@ -5,7 +5,7 @@
  * @Author: lzc
  * @Date: 2020-09-10 10:50:39
  * @LastEditors: lzc
- * @LastEditTime: 2020-09-10 15:12:09
+ * @LastEditTime: 2020-09-10 19:01:37
 -->
 # LWIP-PPPOS-STM32F4
 LWIP+STM32F429+PPPOS
@@ -50,3 +50,5 @@ TCP接收端收到数据 `123456789abcdefghijklmnopqrstuvwxyz`
 * IP需要修改
 
 MQTT接收端收到数据 `123456789abcdefghijklmnopqrstuvwxyz`
+
+### 更新LWIP到最新版本

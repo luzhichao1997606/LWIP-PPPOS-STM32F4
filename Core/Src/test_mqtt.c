@@ -1,4 +1,5 @@
 #include "test_mqtt.h"
+
 #define MY_MQTT_PORT 1883
 static int inpub_id;
 void       example_do_connect(mqtt_client_t* client);

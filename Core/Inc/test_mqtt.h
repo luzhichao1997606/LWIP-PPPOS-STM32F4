@@ -10,7 +10,9 @@
 #ifndef LWIP_HDR_TEST_MQTT_H__
 #define LWIP_HDR_TEST_MQTT_H__
 #include "lwip/apps/mqtt.h"
+#include "lwip/apps/mqtt_priv.h"
 #include "lwip/netif.h"
 #include "lwip/pbuf.h"
 #include <string.h>
+
 #endif
