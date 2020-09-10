@@ -5,7 +5,7 @@
  * @Author: lzc
  * @Date: 2020-09-10 10:50:39
  * @LastEditors: lzc
- * @LastEditTime: 2020-09-10 11:26:15
+ * @LastEditTime: 2020-09-10 15:12:09
 -->
 # LWIP-PPPOS-STM32F4
 LWIP+STM32F429+PPPOS
@@ -15,7 +15,7 @@ LWIP+STM32F429+PPPOS
 #### 协议栈：LWIP
 #### 模块：4G移远EC200S-CN
 #### 配置：串口6为连接到模块，串口4为调试输出
-#### 效果
+#### TCP效果
 >
 ```
 status_cb: Connected
@@ -37,3 +37,16 @@ connect to TCPsend:21 45 00 00 2c 00 00 00 00 ff 06 56 6f 0a bd 52 0f 7d 5d 7b 8
 ```
 
 TCP接收端收到数据 `123456789abcdefghijklmnopqrstuvwxyz`
+
+#### MQTT
+```
+[15:10:32.769]收←◆idle Task is Runnning
+
+[15:10:36.612]收←◆send:7e 21 45 00 00 5a 00 39 00 00 ff 06 a6 f4 0a bd 52 0f 2f 62 88 42 cb 40 07 5b 00 00 22 c2 93 77 17 9c 50 18 08 38 36 ea 00 00 30 30 00 09 70 75 62 5f 74 6f 70 69 63 31 32 33 34 35 36 37 38 39 61 62 63 64 65 66 67 68 69 6a 6b 6c 6d 6e 6f 70 71 72 73 74 75 76 77 78 79 7a 0d 0a f0 6e 7e 
+
+[15:10:36.752]收←◆recv:7e 21 45 04 00 28 f2 a1 40 00 34 06 3f ba 2f 62 88 42 0a bd 52 0f 07 5b cb 40 93 77 17 9c 00 00 22 f4 50 10 72 10 88 b0 00 00 c9 e1 7e 
+
+```
+* IP需要修改
+
+MQTT接收端收到数据 `123456789abcdefghijklmnopqrstuvwxyz`
