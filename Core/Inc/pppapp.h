@@ -5,16 +5,18 @@
  * @Author: lzc
  * @Date: 2020-09-08 09:05:13
  * @LastEditors: lzc
- * @LastEditTime: 2020-09-10 15:05:36
+ * @LastEditTime: 2020-09-12 10:41:22
  */
 #ifndef __PPP_APP_H__
 #define __PPP_APP_H__
 
+#include "cmsis_os.h"
 #include "cycle_queue.h"
 #include "lwip/dhcp.h"
 #include "lwip/dns.h"
 #include "mqtt.h"
 #include "netif/ppp/pppapi.h"
+#include "test_http.h"
 #include "uart_driver.h"
 #include <string.h>
 extern UART_HandleTypeDef huart6;

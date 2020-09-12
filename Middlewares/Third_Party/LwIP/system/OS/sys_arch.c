@@ -39,7 +39,7 @@
 
 #if !NO_SYS
 
-#include "cmsis_os.h"
+#include "cmsis_os.h" 
 
 #if defined(LWIP_PROVIDE_ERRNO)
 int errno;
@@ -376,6 +376,7 @@ osMutexDef(lwip_sys_mutex);
 osMutexId_t lwip_sys_mutex;
 #endif
 // Initialize sys arch
+
 void sys_init(void)
 {
 #if (osCMSIS < 0x20000U)
@@ -437,10 +438,12 @@ void sys_mutex_lock(sys_mutex_t *mutex)
 }
 
 /*-----------------------------------------------------------------------------------*/
-/* Unlock a mutex*/
-void sys_mutex_unlock(sys_mutex_t *mutex)
-{
-  osMutexRelease(*mutex);
+ 
+/** Unlock a mutex
+ * @param mutex the mutex to unlock */
+void sys_mutex_unlock(sys_mutex_t *mutex) {
+    if (osMutexRelease(*mutex) != osOK)
+        printf("sys_mutex_unlock error\n");
 }
 #endif /*LWIP_COMPAT_MUTEX*/
 /*-----------------------------------------------------------------------------------*/
@@ -503,10 +506,12 @@ sys_prot_t sys_arch_protect(void)
   Note: This function is based on FreeRTOS API, because no equivalent CMSIS-RTOS
         API is available
 */
-void sys_arch_unprotect(sys_prot_t pval)
-{
-  ( void ) pval;
-  osMutexRelease(lwip_sys_mutex);
+  
+void sys_arch_unprotect(sys_prot_t p) {
+		if(lwip_sys_mutex != NULL){ 
+    if (osMutexRelease(lwip_sys_mutex) != osOK){ 
+		}
+	}
 }
 
 #endif /* !NO_SYS */

@@ -1,0 +1,69 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.30.0.0
+Copyright (C) 2020 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 1 Administrator, 1, LIC=76F5U-SWY5A-JJS6S-LGDD7-9JMCU-W564S
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.30.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 6 (build 750)
+Assembler:       Armasm.exe V5.06 update 6 (build 750)
+Linker/Locator:  ArmLink.exe V5.06 update 6 (build 750)
+Library Manager: ArmAr.exe V5.06 update 6 (build 750)
+Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
+CPU DLL:         SARMCM3.DLL V5.30.0.0
+Dialog DLL:      DCM.DLL V1.17.3.0
+Target DLL:      Segger\JL2CM3.dll V2.99.38.0
+Dialog DLL:      TCM.DLL V1.42.0.0
+ 
+<h2>Project:</h2>
+C:\Users\Administrator\Desktop\Git\Test\LWIP-PPPOS-STM32F4\LWIP-PPPOS-STM32F4\MDK-ARM\F429.uvprojx
+Project File Date:  09/12/2020
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'F429'
+compiling test_http.c...
+../Core/Inc/test_http.h(31): warning:  #1295-D: Deprecated declaration http_connect - give arg types
+  void http_connect();
+..\Core\Src\test_http.c(18): warning:  #181-D: argument is incompatible with corresponding format string conversion
+      printf("********************    payload is %s   ************************\r\n", p->payload);
+..\Core\Src\test_http.c(37): warning:  #550-D: variable "domain_name"  was set but never used
+      char domain_name[100] = "http://openluat-backend.oss-cn-hangzhou.aliyuncs.com";
+..\Core\Src\test_http.c(67): warning:  #550-D: variable "domain_name"  was set but never used
+      char domain_name[100] = "http://openluat-backend.oss-cn-hangzhou.aliyuncs.com";
+..\Core\Src\test_http.c: 4 warnings, 0 errors
+linking...
+Program Size: Code=87392 RO-data=3244 RW-data=408 ZI-data=40640  
+FromELF: creating hex file...
+"F429\F429.axf" - 0 Error(s), 4 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.7.0.pack
+                ARM.CMSIS.5.7.0
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.4.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.STM32F4xx_DFP.2.14.0.pack
+                Keil.STM32F4xx_DFP.2.14.0
+                STMicroelectronics STM32F4 Series Device Support, Drivers and Examples
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_F429
+  C:\Users\Administrator\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include
+  C:\Users\Administrator\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.14.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.4.0
+Build Time Elapsed:  00:00:03
+</pre>
+</body>
+</html>

@@ -1,7 +1,6 @@
 #include "pppapp.h"
 
-void example_publish(void);
-
+void  example_publish(void);
 err_t ppposnetif_init(struct netif* netif);
 err_t tcp_Client_connected(void* arg, struct tcp_pcb* pcb, err_t err);
 
@@ -40,7 +39,6 @@ void status_cb(ppp_pcb* pcb, int err_code, void* ctx)
 {
     struct netif* pppif = ppp_netif(pcb);
     LWIP_UNUSED_ARG(ctx);
-
     switch (err_code)
     {
         case PPPERR_NONE: {
@@ -49,9 +47,9 @@ void status_cb(ppp_pcb* pcb, int err_code, void* ctx)
 #endif /* LWIP_DNS */
             printf("status_cb: Connected\n");
 #if PPP_IPV4_SUPPORT
-            printf("   our_ipaddr  = %s\n", ipaddr_ntoa(&pppif->ip_addr));
-            printf("   his_ipaddr  = %s\n", ipaddr_ntoa(&pppif->gw));
-            printf("   netmask     = %s\n", ipaddr_ntoa(&pppif->netmask));
+            printf("   our_ipaddr   = %s \n", ipaddr_ntoa(&pppif->ip_addr));
+            printf("   gw_ipaddr    = %s \n", ipaddr_ntoa(&pppif->gw));
+            printf("   netmask      = %s \n", ipaddr_ntoa(&pppif->netmask));
             ppp_conn_success = true;
 #if LWIP_DNS
             ns = ( ip_addr_t* )dns_getserver(0);
@@ -161,8 +159,8 @@ void PppRead(void const* argument)
                     taskEXIT_CRITICAL();
                 }
             }
-            osDelay(1);
         }
+        osDelay(10);
     }
 }
 
@@ -171,9 +169,17 @@ uint8_t lwip_comm_init(void)
 
     uint8_t ctx = 0;
 
-    // create thread input
+// create thread input
+
+// RTOSV1.0
+#if (osCMSIS < 0x20000U)
     osThreadDef(ppp, PppRead, osPriorityNormal, 1, 512);
     PPP_SEND_TASK_HANDLE = osThreadCreate(osThread(ppp), NULL);
+#else
+    // RTOSV2.0
+    const osThreadAttr_t ppp_Task_attributes = { .name = "ppp", .priority = ( osPriority_t )osPriorityNormal, .stack_size = 512 * 4 };
+    PPP_SEND_TASK_HANDLE                     = osThreadNew(( osThreadFunc_t )PppRead, NULL, &ppp_Task_attributes);
+#endif
     if (PPP_SEND_TASK_HANDLE == NULL)
     {
         printf("create recv thread failed\r\n");
@@ -245,14 +251,22 @@ void connect_to_server(void const* argument)
     {
         osDelay(10);
     }
-
     void mqtt_init(void);
     mqtt_init();
     for (;;)
     {
         example_publish();
-        osDelay(5000);
+        http_connect();
+        osDelay(15000);
     }
+
+    //   void mqtt_init(void);
+    //   mqtt_init();
+    //   for (;;)
+    //   {
+    //       example_publish();
+    //       osDelay(5000);
+    //   }
 
     // create_tcp();
     // char data[32] = { 0 };
@@ -296,6 +310,13 @@ void connect_to_server(void const* argument)
 
 void tcp_connect_init(void)
 {
+// RTOSV1.0
+#if (osCMSIS < 0x20000U)
     osThreadDef(tcp, connect_to_server, osPriorityNormal, 1, 512);
     TCP_CLIENT_TASK_HANDLE = osThreadCreate(osThread(tcp), NULL);
+// RTOSV2.0
+#else
+    const osThreadAttr_t tcp_Task_attributes = { .name = "tcp", .priority = ( osPriority_t )osPriorityNormal, .stack_size = 512 * 4 };
+    TCP_CLIENT_TASK_HANDLE                   = osThreadNew(( osThreadFunc_t )connect_to_server, NULL, &tcp_Task_attributes);
+#endif
 }
