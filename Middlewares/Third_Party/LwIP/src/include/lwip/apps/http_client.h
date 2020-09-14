@@ -149,7 +149,7 @@ err_t httpc_get_file_to_disk(const ip_addr_t* server_addr, u16_t port, const cha
                              httpc_state_t** connection);
 err_t httpc_get_file_dns_to_disk(const char* server_name, u16_t port, const char* uri, const httpc_connection_t* settings, void* callback_arg, const char* local_file_name, httpc_state_t** connection);
 #endif /* LWIP_HTTPC_HAVE_FILE_IO */
-
+extern httpc_state_t* my_connection;
 #ifdef __cplusplus
 }
 #endif

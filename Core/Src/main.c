@@ -363,7 +363,6 @@ void StartDefaultTask(void const* argument)
     /* USER CODE BEGIN 5 */
     printf("INIT LWIP\r\n");
     lwip_comm_init();
-
     printf("INIT OVER\r\n");
     /* Infinite loop */
     for (;;)

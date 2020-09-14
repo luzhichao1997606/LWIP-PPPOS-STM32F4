@@ -11,6 +11,7 @@ f429\sys_arch.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\inttypes.h
 f429\sys_arch.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h
 f429\sys_arch.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
 f429\sys_arch.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/opt.h
+f429\sys_arch.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/debug.h
 f429\sys_arch.o: ../Core/Inc/lwipopts.h
 f429\sys_arch.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 f429\sys_arch.o: ../Core/Inc/stm32f4xx_hal_conf.h
@@ -41,7 +42,6 @@ f429\sys_arch.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
 f429\sys_arch.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 f429\sys_arch.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 f429\sys_arch.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
-f429\sys_arch.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/debug.h
 f429\sys_arch.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/def.h
 f429\sys_arch.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/sys.h
 f429\sys_arch.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/err.h

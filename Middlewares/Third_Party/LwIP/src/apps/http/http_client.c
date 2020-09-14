@@ -127,7 +127,7 @@
     "Connection: Close\r\n" /* we don't support persistent connections, yet */ \
     "\r\n"
 #define HTTPC_REQ_11_PROXY_PORT_FORMAT(host, host_port, uri, srv_name) HTTPC_REQ_11_PROXY_PORT, host, host_port, uri, HTTPC_CLIENT_AGENT, srv_name
-char end_bit = 10;
+char end_bit = 0;
 typedef enum ehttpc_parse_state
 {
     HTTPC_PARSE_WAIT_FIRST_LINE = 0,
@@ -322,6 +322,7 @@ static err_t httpc_tcp_recv(void* arg, struct altcp_pcb* pcb, struct pbuf* p, er
             /* receiving data and either all data received or no content length header */
             result = HTTPC_RESULT_OK;
         }
+        printf("altcp_close http close!!!\r\n");
         return httpc_close(req, result, req->rx_status, ERR_OK);
     }
     if (req->parse_state != HTTPC_PARSE_RX_DATA)
@@ -600,6 +601,7 @@ static err_t httpc_init_connection_common(httpc_state_t** connection, const http
     if ((mem_alloc_len < alloc_len) || (req_len + 1 > 0xFFFF))
     {
 
+        printf("4 \r\n");
         return ERR_VAL;
     }
 
@@ -653,7 +655,10 @@ static err_t httpc_init_connection_common(httpc_state_t** connection, const http
     req_len2 = httpc_create_request_string(settings, server_name, server_port, uri, use_host, ( char* )req->request->payload, req_len + 1);
     if (req_len2 != req_len)
     {
+        printf("REQ_LEN2 IS %d\r\n", req_len2);
+        printf("REQ_LEN1 IS %d\r\n", req_len);
         httpc_free_state(req);
+        printf("3 \r\n");
         return ERR_VAL;
     }
 
@@ -683,6 +688,7 @@ static err_t httpc_init_connection_addr(httpc_state_t** connection, const httpc_
     char* server_addr_str = ipaddr_ntoa(server_addr);
     if (server_addr_str == NULL)
     {
+        printf("2 \r\n");
         return ERR_VAL;
     }
     return httpc_init_connection_common(connection, settings, server_addr_str, server_port, uri, recv_fn, callback_arg, 1);
@@ -702,6 +708,8 @@ static err_t httpc_init_connection_addr(httpc_state_t** connection, const httpc_
  * @return ERR_OK if starting the request succeeds (callback_fn will be called later)
  *         or an error code
  */
+httpc_state_t* my_connection;
+
 err_t httpc_get_file(const ip_addr_t* server_addr, u16_t port, const char* uri, const httpc_connection_t* settings, altcp_recv_fn recv_fn, void* callback_arg, httpc_state_t** connection)
 {
     err_t          err;
@@ -728,7 +736,7 @@ err_t httpc_get_file(const ip_addr_t* server_addr, u16_t port, const char* uri, 
         httpc_free_state(req);
         return err;
     }
-
+    my_connection = req;
     if (connection != NULL)
     {
         *connection = req;

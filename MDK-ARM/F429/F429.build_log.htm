@@ -30,17 +30,27 @@ Build target 'F429'
 compiling test_http.c...
 ../Core/Inc/test_http.h(31): warning:  #1295-D: Deprecated declaration http_connect - give arg types
   void http_connect();
-..\Core\Src\test_http.c(18): warning:  #181-D: argument is incompatible with corresponding format string conversion
+..\Core\Src\test_http.c(32): warning:  #181-D: argument is incompatible with corresponding format string conversion
       printf("********************    payload is %s   ************************\r\n", p->payload);
-..\Core\Src\test_http.c(37): warning:  #550-D: variable "domain_name"  was set but never used
+..\Core\Src\test_http.c(28): warning:  #177-D: variable "r"  was declared but never referenced
+      err_t r;
+..\Core\Src\test_http.c(69): warning:  #550-D: variable "domain_name"  was set but never used
       char domain_name[100] = "http://openluat-backend.oss-cn-hangzhou.aliyuncs.com";
-..\Core\Src\test_http.c(67): warning:  #550-D: variable "domain_name"  was set but never used
+..\Core\Src\test_http.c(98): warning:  #550-D: variable "domain_name"  was set but never used
       char domain_name[100] = "http://openluat-backend.oss-cn-hangzhou.aliyuncs.com";
-..\Core\Src\test_http.c: 4 warnings, 0 errors
+..\Core\Src\test_http.c(220): warning:  #1166-D: returning pointer to local variable
+      return file_bin_data;
+..\Core\Src\test_http.c(277): warning:  #181-D: argument is incompatible with corresponding format string conversion
+          printf("%s\r\n", tcp_send_pbuf->payload);
+..\Core\Src\test_http.c(305): warning:  #177-D: variable "clientString"  was declared but never referenced
+      char clientString[] = "This is a new client connection.\r\n";
+..\Core\Src\test_http.c(392): warning:  #1-D: last line of file ends without a newline
+  }
+..\Core\Src\test_http.c: 9 warnings, 0 errors
 linking...
-Program Size: Code=87392 RO-data=3244 RW-data=408 ZI-data=40640  
+Program Size: Code=77216 RO-data=2372 RW-data=516 ZI-data=41740  
 FromELF: creating hex file...
-"F429\F429.axf" - 0 Error(s), 4 Warning(s).
+"F429\F429.axf" - 0 Error(s), 9 Warning(s).
 
 <h2>Software Packages used:</h2>
 

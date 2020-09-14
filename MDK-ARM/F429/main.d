@@ -52,7 +52,6 @@ f429\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 f429\main.o: ../Core/Inc/cycle_queue.h
 f429\main.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/dhcp.h
 f429\main.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/opt.h
-f429\main.o: ../Core/Inc/lwipopts.h
 f429\main.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/debug.h
 f429\main.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/arch.h
 f429\main.o: ..\Middlewares\Third_Party\LwIP\system\arch/cc.h
@@ -63,6 +62,7 @@ f429\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\inttypes.h
 f429\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h
 f429\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
 f429\main.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/opt.h
+f429\main.o: ../Core/Inc/lwipopts.h
 f429\main.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/dns.h
 f429\main.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip\apps\mqtt.h
 f429\main.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/apps/mqtt_opts.h
@@ -117,4 +117,5 @@ f429\main.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/altcp.h
 f429\main.o: ../Core/Inc/test_http.h
 f429\main.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/apps/httpd.h
 f429\main.o: ..\Middlewares\Third_Party\LwIP\src\include\lwip/apps/httpd_opts.h
+f429\main.o: ../Core/Inc/pppapp.h
 f429\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

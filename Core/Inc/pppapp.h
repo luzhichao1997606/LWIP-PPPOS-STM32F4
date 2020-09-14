@@ -5,7 +5,7 @@
  * @Author: lzc
  * @Date: 2020-09-08 09:05:13
  * @LastEditors: lzc
- * @LastEditTime: 2020-09-12 10:41:22
+ * @LastEditTime: 2020-09-14 14:31:14
  */
 #ifndef __PPP_APP_H__
 #define __PPP_APP_H__
@@ -20,6 +20,7 @@
 #include "uart_driver.h"
 #include <string.h>
 extern UART_HandleTypeDef huart6;
+extern bool               ppp_conn_success;
 
 uint8_t lwip_comm_init(void);
 void    tcp_connect_init(void);

@@ -251,13 +251,11 @@ void connect_to_server(void const* argument)
     {
         osDelay(10);
     }
-    void mqtt_init(void);
-    mqtt_init();
+    http_init();
     for (;;)
     {
-        example_publish();
-        http_connect();
-        osDelay(15000);
+        http_poll();
+        osDelay(1000);
     }
 
     //   void mqtt_init(void);
