@@ -5,7 +5,7 @@
  * @Author: lzc
  * @Date: 2020-09-12 10:17:21
  * @LastEditors: lzc
- * @LastEditTime: 2020-09-14 19:37:09
+ * @LastEditTime: 2020-09-15 10:22:56
  */
 #include "test_http.h"
 #define TEST_START_BIT 0
@@ -14,10 +14,11 @@
 struct tcp_pcb* tcp_client_pcb;
 u16_t           All_Data_lens      = 0;
 u16_t           start_bits_of_HTTP = 0;
-u16_t           stop_bits_of_HTTP  = 512;
+u16_t           stop_bits_of_HTTP  = 511;
 bool            http_get_lens_flag = false;
 char            url[100]           = "/upgrade_firmware/test.bin_20200914091821368896";
-
+bool            packet_over_flag   = true;
+bool            ota_over_flag      = false;
 //合宙的服务器的路径
 char* true_server_name = "openluat-backend.oss-cn-hangzhou.aliyuncs.com";
 
@@ -179,20 +180,29 @@ x-oss-server-time: 1
 
 hello world!~	0
 */
+u16_t temp_num               = 0;
+u16_t Packet_Num             = 0;
+char  http_first_packet_len  = 0;
+u16_t http_second_packet_len = 0;
 char* http_get_data_string(char* http_data_Payload)
 {
     char file_bin_data[512]  = { 0 };
     char file_temp_data[600] = { 0 };
-    char temp[50]            = { 0 };
     char Range_data[20]      = { 0 };
-    // u16_t start_len           = 0;
-    // u16_t stop_len            = 0;
+    bool http_head_flag      = false;
 
-    memset(temp, 0, strlen(temp));
     memset(file_bin_data, 0, strlen(file_bin_data));
     memset(file_temp_data, 0, strlen(file_temp_data));
     memset(Range_data, 0, strlen(Range_data));
-
+    //判断是否有HTTP报文头
+    if (strstr(http_data_Payload, "HTTP/1.1") == NULL)
+    {
+        http_head_flag = false;
+    }
+    else
+    {
+        http_head_flag = true;
+    }
     //获取长度
     if (!http_get_lens_flag)
     {
@@ -200,21 +210,51 @@ char* http_get_data_string(char* http_data_Payload)
         find_string(strstr(http_data_Payload, "Content-Range"), "/", "\r\n", Range_data);
         All_Data_lens = atoi(Range_data);
         printf("%d", All_Data_lens);
-        printf("!!!!!!!!!!!!!!!!!!!!!!!%d \r\n", atoi(Range_data));
+        Packet_Num = All_Data_lens / 512;
+        if (All_Data_lens % 512)
+        {
+            Packet_Num++;
+        }
+        printf("!!!!!!!!!!!!!!!!!!!!!!!  %d  !!!!!!!!!!!!!!!!!!!!!!! %d \r\n", atoi(Range_data), Packet_Num);
     }
-
-    strstr(http_data_Payload, "x-oss-server-time");
-    memcpy(file_temp_data, strstr(http_data_Payload, "x-oss-server-time"), strlen(strstr(http_data_Payload, "x-oss-server-time")));
-    memcpy(file_bin_data, strstr(file_temp_data, "\r\n") + 4, 512);  // atoi(stop_bit) - atoi(start_bit) + 1);
-    printf("file_bin_data \r\n%s\r\n", file_bin_data);
-
-    //更新起始和结束位置
-    start_bits_of_HTTP = stop_bits_of_HTTP + 1;
-    stop_bits_of_HTTP  = stop_bits_of_HTTP + 512;
-    if (stop_bits_of_HTTP >= All_Data_lens)
+    //有报文头时
+    if (http_head_flag)
     {
-        start_bits_of_HTTP = All_Data_lens - 1;
-        stop_bits_of_HTTP  = All_Data_lens;
+
+        memset(file_bin_data, 0, strlen(file_bin_data));
+        memset(file_temp_data, 0, strlen(file_temp_data));
+        strstr(http_data_Payload, "x-oss-server-time");
+        memcpy(file_temp_data, strstr(http_data_Payload, "x-oss-server-time"), strlen(strstr(http_data_Payload, "x-oss-server-time")));
+        http_first_packet_len = strlen(strstr(file_temp_data, "\r\n") + 4) - 2;  //需要去除结尾符
+        memcpy(file_bin_data, strstr(file_temp_data, "\r\n") + 4, http_first_packet_len);
+        printf("!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!! \r\n");
+        printf("file_bin_data \r\n%s\r\n", file_bin_data);
+        printf("!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!! \r\n");
+        printf("\r\nhttp_first_packet_len %d\r\n", http_first_packet_len);
+        printf("!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!! \r\n");
+    }
+    else
+    {
+        printf("Second packet\r\n");
+        memset(file_bin_data, 0, strlen(file_bin_data));
+        memset(file_temp_data, 0, strlen(file_temp_data));
+        http_second_packet_len = 512 - http_first_packet_len;
+        memcpy(file_bin_data, http_data_Payload, http_second_packet_len);
+        printf("http_second_packet_len \r\n%d\r\n", http_second_packet_len);
+        printf("!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!! \r\n");
+        printf("file_bin_data \r\n%s\r\n", file_bin_data);
+        printf("!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!! \r\n");
+        temp_num++;
+        printf("!!!!!!!!!!!!!!!!!!!!!!!%d!!!!!!!!!!!!!!!!!!!!!!! \r\n", temp_num);
+        //更新起始和结束位置
+        start_bits_of_HTTP = stop_bits_of_HTTP + 1;
+        stop_bits_of_HTTP  = stop_bits_of_HTTP + 512;
+        //接收完毕
+        if (stop_bits_of_HTTP >= All_Data_lens || temp_num >= Packet_Num)
+        {
+            //删除线程或者置位标志位
+            ota_over_flag = true;
+        }
     }
     //返回bin文件的数据
     return file_bin_data;
@@ -280,6 +320,11 @@ static err_t TCPClientCallback(void* arg, struct tcp_pcb* pcb, struct pbuf* tcp_
         http_get_data_string(tcp_send_pbuf->payload);
 
         //存储
+        packet_over_flag = true;  //数据包存储完成
+        if (ota_over_flag)
+        {
+            packet_over_flag = false;
+        }
         pbuf_free(tcp_recv_pbuf);
     }
     else if (err == ERR_OK)
@@ -376,10 +421,10 @@ void http_poll(void)
     char send_data[600];
     memset(send_data, 0, strlen(send_data));
     // tcp_write(pcb, clientString, strlen(clientString), 0);
-    if (tcp_client_pcb != NULL && tcp_client_pcb->state == 4)
+    if (tcp_client_pcb != NULL && tcp_client_pcb->state == 4 && packet_over_flag)
     {
+        packet_over_flag = false;
         printf("***************************************************************\r\n");
-        /* 创建一个建立连接的问候字符串*/
         // sprintf(send_data, HTTPC_REQ_10_HOST, url, "lwIP/", true_server_name, 0, 12);
         composite_send_string(send_data, start_bits_of_HTTP, stop_bits_of_HTTP);
         while (ERR_OK != tcp_write(tcp_client_pcb, send_data, strlen(send_data), TCP_WRITE_FLAG_COPY))

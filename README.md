@@ -52,3 +52,5 @@ TCP接收端收到数据 `123456789abcdefghijklmnopqrstuvwxyz`
 MQTT接收端收到数据 `123456789abcdefghijklmnopqrstuvwxyz`
 
 ### 更新LWIP到最新版本
+
+### HTTP客户端功能完善，现在可以正常的进行数据的接收，下一步完成OTA功能
