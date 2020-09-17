@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "pppapp.h"
@@ -51,6 +52,7 @@ PUTCHAR_PROTOTYPE
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 
+uint8_t uart4_rxbuf[10];
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -104,6 +106,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
             }
         }
     }
+    if (huart->Instance == UART4)
+    {
+        HAL_UART_Transmit(&huart4, uart4_rxbuf, 1, 100);  // 把收到的字节原样发送出去
+        HAL_UART_Receive_IT(&huart4, uart4_rxbuf, 1);     // 重新注册一次，要不然下次收不到了
+    }
 }
 
 /* USER CODE END 0 */
@@ -131,7 +138,7 @@ int main(void)
     SystemClock_Config();
 
     /* USER CODE BEGIN SysInit */
-
+    // SCB->VTOR = FLASH_BASE | 0x8000;
     /* USER CODE END SysInit */
 
     /* Initialize all configured peripherals */
@@ -162,11 +169,11 @@ int main(void)
 
     /* Create the thread(s) */
     /* definition and creation of defaultTask */
-    osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+    osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128 * 2);
     defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
     /* definition and creation of myTask02 */
-    osThreadDef(myTask02, StartTask_Test, osPriorityLow, 0, 128);
+    osThreadDef(myTask02, StartTask_Test, osPriorityLow, 0, 128 * 2);
     myTask02Handle = osThreadCreate(osThread(myTask02), NULL);
 
     /* USER CODE BEGIN RTOS_THREADS */
@@ -267,7 +274,7 @@ static void MX_UART4_Init(void)
         Error_Handler();
     }
     /* USER CODE BEGIN UART4_Init 2 */
-
+    HAL_UART_Receive_IT(&huart4, uart4_rxbuf, 1);
     /* USER CODE END UART4_Init 2 */
 }
 
@@ -364,6 +371,8 @@ void StartDefaultTask(void const* argument)
     printf("INIT LWIP\r\n");
     lwip_comm_init();
     printf("INIT OVER\r\n");
+
+    printf("OTA VER2.0\r\n");
     /* Infinite loop */
     for (;;)
     {

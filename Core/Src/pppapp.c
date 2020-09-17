@@ -247,6 +247,7 @@ void create_tcp(void)
 void connect_to_server(void const* argument)
 {
 
+    osThreadId http_thread_ID;
     while (!ppp_conn_success)
     {
         osDelay(10);
@@ -255,7 +256,13 @@ void connect_to_server(void const* argument)
     for (;;)
     {
         http_poll();
-        osDelay(1000);
+        if (ota_over_flag)
+        {
+            //停止线程
+            // http_thread_ID = osThreadGetId();
+            // osThreadTerminate(http_thread_ID);
+        }
+        osDelay(10);
     }
 
     //   void mqtt_init(void);

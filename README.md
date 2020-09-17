@@ -5,7 +5,7 @@
  * @Author: lzc
  * @Date: 2020-09-10 10:50:39
  * @LastEditors: lzc
- * @LastEditTime: 2020-09-10 19:01:37
+ * @LastEditTime: 2020-09-17 15:32:11
 -->
 # LWIP-PPPOS-STM32F4
 LWIP+STM32F429+PPPOS
@@ -53,4 +53,8 @@ MQTT接收端收到数据 `123456789abcdefghijklmnopqrstuvwxyz`
 
 ### 更新LWIP到最新版本
 
-### HTTP客户端功能完善，现在可以正常的进行数据的接收，下一步完成OTA功能
+#### HTTP客户端功能完善，现在可以正常的进行数据的接收，下一步完成OTA功能
+
+#### OTA功能完成，需要注意改变`TCP_MSS`会导致接受的TCP窗口变化。最好采用一个比较大的缓存区进行存储接受数据，如果缓冲区小则会导致数据接收出现问题。例如发送成功但是没有返回数据等。
+
+#### 下一步是加入重定向的方式进行获取OTA的数据包

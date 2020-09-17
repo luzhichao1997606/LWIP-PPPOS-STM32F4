@@ -80,9 +80,9 @@
             <nStopB2X>0</nStopB2X>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
+            <UserProg1Name>fromelf --bin --output raw.bin "#L"</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -276,7 +276,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x80000</Size>
+                <Size>0x78000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -300,8 +300,8 @@
               </OCR_RVCT8>
               <OCR_RVCT9>
                 <Type>0</Type>
-                <StartAddress>0x20000000</StartAddress>
-                <Size>0x30000</Size>
+                <StartAddress>0x20001400</StartAddress>
+                <Size>0x2ec00</Size>
               </OCR_RVCT9>
               <OCR_RVCT10>
                 <Type>0</Type>
@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F429xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;..\Middlewares\Third_Party\LwIP\system\arch;..\Middlewares\Third_Party\LwIP\src\api;..\Middlewares\Third_Party\LwIP\src\netif;..\Middlewares\Third_Party\LwIP\src\netif\ppp;..\Middlewares\Third_Party\LwIP\src\include\lwip;..\Middlewares\Third_Party\LwIP\src\include\lwip\apps;..\Middlewares\Third_Party\LwIP\src\include\lwip\priv;..\Middlewares\Third_Party\LwIP\src\include\netif;..\Middlewares\Third_Party\LwIP\src\include\netif\ppp;..\Middlewares\Third_Party\LwIP\src\include\posix;..\Middlewares\Third_Party\LwIP\src\include\posix\sys;..\Middlewares\Third_Party\LwIP\src\include;..\Middlewares\Third_Party\LwIP\system;..\Middlewares\Third_Party\LwIP\src\apps\mqtt;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;..\Middlewares\Third_Party\LwIP\src\apps\http;..\Middlewares\Third_Party\LwIP\src\apps\http\makefsdata</IncludePath>
+              <IncludePath>../Core/Inc; ../Drivers/STM32F4xx_HAL_Driver/Inc; ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy; ../Middlewares/Third_Party/FreeRTOS/Source/include; ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F; ../Drivers/CMSIS/Device/ST/STM32F4xx/Include; ../Drivers/CMSIS/Include; ..\Middlewares\Third_Party\LwIP\system\arch; ..\Middlewares\Third_Party\LwIP\src\api; ..\Middlewares\Third_Party\LwIP\src\netif; ..\Middlewares\Third_Party\LwIP\src\netif\ppp; ..\Middlewares\Third_Party\LwIP\src\include\lwip; ..\Middlewares\Third_Party\LwIP\src\include\lwip\apps; ..\Middlewares\Third_Party\LwIP\src\include\lwip\priv; ..\Middlewares\Third_Party\LwIP\src\include\netif; ..\Middlewares\Third_Party\LwIP\src\include\netif\ppp; ..\Middlewares\Third_Party\LwIP\src\include\posix; ..\Middlewares\Third_Party\LwIP\src\include\posix\sys; ..\Middlewares\Third_Party\LwIP\src\include; ..\Middlewares\Third_Party\LwIP\system; ..\Middlewares\Third_Party\LwIP\src\apps\mqtt; ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS; ..\Middlewares\Third_Party\LwIP\src\apps\http; ..\Middlewares\Third_Party\LwIP\src\apps\http\makefsdata</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -419,6 +419,11 @@
               <FilePath>..\Core\Src\test_mqtt.c</FilePath>
             </File>
             <File>
+              <FileName>test_http.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\test_http.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/main.c</FilePath>
@@ -444,9 +449,9 @@
               <FilePath>../Core/Src/stm32f4xx_hal_timebase_tim.c</FilePath>
             </File>
             <File>
-              <FileName>test_http.c</FileName>
+              <FileName>UpdateIAP.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\Src\test_http.c</FilePath>
+              <FilePath>..\Core\Src\UpdateIAP.c</FilePath>
             </File>
           </Files>
         </Group>
