@@ -5,115 +5,44 @@
  * @Author: lzc
  * @Date: 2020-09-12 10:17:21
  * @LastEditors: lzc
- * @LastEditTime: 2020-09-17 15:14:18
+ * @LastEditTime: 2020-09-18 14:19:02
  */
 #include "test_http.h"
 #define TEST_START_BIT 0
 #define TEST_STOP_BIT 511
 
 struct tcp_pcb* tcp_client_pcb;
-u32_t           All_Data_lens           = 0;
-u32_t           start_bits_of_HTTP      = 0;
-u32_t           stop_bits_of_HTTP       = 511;
-bool            http_get_lens_flag      = false;
-char            url[100]                = "/upgrade_firmware/raw.bin_20200916163701687664";
-bool            packet_over_flag        = true;
-bool            ota_over_flag           = false;
-u32_t           tcp_recv_pbuf_total_len = 0;
+struct tcp_pcb* DNS_client_pcb;
+
+u32_t All_Data_lens      = 0;
+u32_t start_bits_of_HTTP = 0;
+u32_t stop_bits_of_HTTP  = 511;
+
+bool http_get_lens_flag = false;
+bool packet_over_flag   = true;
+bool ota_over_flag      = false;
+bool get_url_over_flag  = false;
+
+char url[100];
+
+char get_url[200] = "/api/site/firmware_upgrade"
+                    "?project_key=4FXYhaL8seFmIlLoY87wgKQycW4sx4CJ"
+                    "&imei=862373047834743"
+                    "&device_key=kC5zJV6136615258"
+                    "&firmware_name=yami"
+                    "&version=1.0.1"
+                    "&need_oss_url=1";
+
+u32_t tcp_recv_pbuf_total_len = 0;
 //合宙的服务器的路径
-char* true_server_name = "openluat-backend.oss-cn-hangzhou.aliyuncs.com";
+// char* true_server_name = "openluat-backend.oss-cn-hangzhou.aliyuncs.com";
+char  true_server_name[100] = { 0 };
+char* url_server_name       = "iot.openluat.com";
 
-static void HTTP_Client_Initialization(void);
-// http处理函数
-static err_t HttpClientGetFileReceive(void* arg, struct tcp_pcb* tpcb, struct pbuf* p, err_t err)
-{
-    err_t r;
-    printf("hello\r\n");
-    printf("***************************************************************\r\n");
-    printf("********************      len is %d     ************************\r\n", p->len);
-    printf("********************    payload is %s   ************************\r\n", p->payload);
-    printf("***************************************************************\r\n");
+static void      http_get_redir_url();
+static ip_addr_t dns_server_local(char* url);
+static void      HTTP_Client_Initialization(void);
 
-    mem_free(my_connection);
-    my_connection = NULL;
-    if (tpcb != NULL)
-    {
-        err_t r;
-        altcp_arg(tpcb, NULL);
-        altcp_recv(tpcb, NULL);
-        altcp_err(tpcb, NULL);
-        altcp_poll(tpcb, NULL, 0);
-        altcp_sent(tpcb, NULL);
-        r = altcp_close(tpcb);
-        if (r != ERR_OK)
-        {
-            altcp_abort(tpcb);
-            return ERR_ABRT;
-        }
-    }
-    return ERR_OK;
-}
-/**
- * @name: http_get_url
- * @brief: 获取URL
- * @author: lzc
- * @param {type} None
- * @return {type} None
- * @note: 修改记录：初次创建
- */
-void http_get_url()
-{
-    ip_addr_t server_addr;
-
-    err_t ErrorStatus_http;
-    IP4_ADDR(&server_addr, 47, 110, 177, 54);  //合宙IP
-    // IP4_ADDR(&server_addr, 125, 123, 142, 71);   //本机查看IP（DEBUG）
-    char domain_name[100] = "http://openluat-backend.oss-cn-hangzhou.aliyuncs.com";
-    domain_name[17]       = '\0';
-
-    char                url[100] = "/upgrade_firmware/test.bin_20200912142838784755";
-    u16_t               portnum  = 80;
-    httpc_connection_t* conn_settings_try;
-    conn_settings_try->use_proxy = 0;  //不使用代理
-    ErrorStatus_http             = httpc_get_file(&server_addr, portnum, url, conn_settings_try, HttpClientGetFileReceive, NULL, NULL);
-    printf("ErrorStatus_http is %d      \r\n  ", ErrorStatus_http);
-}
-void http_result(void* arg, httpc_result_t httpc_result, u32_t rx_content_len, u32_t srv_res, err_t err)
-{
-    printf("result %d , len is %d", httpc_result, rx_content_len);
-}
-/**
- * @name: http_connect
- * @brief: 连接以获取数据
- * @author: lzc
- * @param {type} None
- * @return {type} None
- * @note: 修改记录：初次创建
- */
-
-void http_connect()
-{
-    ip_addr_t server_addr;
-    err_t     ErrorStatus_http;
-    IP4_ADDR(&server_addr, 47, 110, 177, 54);  //合宙IP
-    // IP4_ADDR(&server_addr, 125, 123, 142, 71);  //本机查看IP（DEBUG）
-    char domain_name[100] = "http://openluat-backend.oss-cn-hangzhou.aliyuncs.com";
-    domain_name[17]       = '\0';
-
-    u16_t               portnum = 80;
-    httpc_connection_t* conn_settings_try;
-    conn_settings_try->use_proxy = 0;  //不使用代理
-    conn_settings_try->result_fn = http_result;
-    ErrorStatus_http             = httpc_get_file(&server_addr, portnum, url, conn_settings_try, HttpClientGetFileReceive, NULL, NULL);
-    if (ErrorStatus_http == HTTPC_RESULT_OK)
-    {
-        printf("SUCCESS !!");
-    }
-    else
-    {
-        printf("ErrorStatus_http is %d      \r\n  ", ErrorStatus_http);
-    }
-}
 /*****************************************************************************************************************************************/
 /**
  * @name:
@@ -241,7 +170,7 @@ u32_t      http_first_packet_len = 0;  // u32_t      http_second_packet_len = 0;
 char       Result[512]           = { 0 };
 TickType_t tick_count            = 0;
 
-char* http_get_data_string(char* http_data_Payload)
+static char* http_get_data_string(char* http_data_Payload)
 {
     char file_bin_data[512]  = { 0 };
     char file_temp_data[600] = { 0 };
@@ -371,7 +300,66 @@ char* http_get_data_string(char* http_data_Payload)
  * @return {type} None
  * @note: 修改记录：初次创建
  */
-char* composite_send_string(char* buff, u32_t Start_bit, u32_t Stop_bit)
+static char* dns_get_url(char* tcp_data_Payload)
+{
+    //获取URL
+    char HZ_HTTP_URL_Get[150];
+    char Source[300], Proc[300], Output[150];
+
+    memset(Source, 0, sizeof(Source));
+    memset(Proc, 0, sizeof(Proc));
+    memset(Output, 0, sizeof(Output));
+    //
+    strcpy(Source, strstr(tcp_data_Payload, "Location"));
+    strcpy(Proc, strstr(tcp_data_Payload, "Air-UpgradeTime"));
+    //
+    printf("1Count ++ ,%s,%d\r\n", Source, strlen(Source));
+    printf("2Count ++ ,%s,%d\r\n", Proc, strlen(Proc));
+    //
+    memmove(Output, Source, strlen(Source) - strlen(Proc) - 2);
+    printf("3Count ++ ,%s,%d\r\n", Output, strlen(Output));
+    //
+    strcpy(Output, strstr(Output, "http"));
+    printf("4Count ++ ,%s,%d\r\n", Output, strlen(Output));
+    //
+    strcpy(HZ_HTTP_URL_Get, Output + 7);
+    printf("HZ_HTTP_URL_Get is %s \r\n", HZ_HTTP_URL_Get);
+
+    //先进行字符串的分割
+    // 1.step
+    //获取的是bin文件的名称
+
+    const char ch                   = '/';
+    char       size_of_url          = 0;
+    char       size_of_bin_file_url = 0;
+
+    memset(url, 0x00, sizeof(url));
+    memcpy(url, strchr(HZ_HTTP_URL_Get, ch), strlen(strchr(HZ_HTTP_URL_Get, ch)));
+    printf("bin file name is %s \r\n", url);
+    // 2.step
+    //获取的是需要连接进行升级的地址
+    char Tset_server_name[100];
+    size_of_bin_file_url = strlen(url);
+    size_of_url          = strlen(HZ_HTTP_URL_Get);
+    memset(Tset_server_name, 0, sizeof(Tset_server_name));
+    memcpy(Tset_server_name, HZ_HTTP_URL_Get, (size_of_url - size_of_bin_file_url));
+
+    memcpy(true_server_name, Tset_server_name, sizeof(true_server_name));
+
+    printf("true_server_name is %s\r\n", true_server_name);
+    // 3.step
+    //返回IP地址 的 URL
+    return true_server_name;
+}
+/**
+ * @name:
+ * @brief:
+ * @author: lzc
+ * @param {type} None
+ * @return {type} None
+ * @note: 修改记录：初次创建
+ */
+static char* composite_send_string(char* buff, u32_t Start_bit, u32_t Stop_bit)
 {
     //合成发送字符串
     /* 创建一个建立连接的问候字符串*/
@@ -390,7 +378,7 @@ char* composite_send_string(char* buff, u32_t Start_bit, u32_t Stop_bit)
 static void HTTPClientConnectError(void* arg, err_t err)
 {
     /* 重新启动连接 */
-    HTTP_Client_Initialization();
+    // HTTP_Client_Initialization();
 }
 /**
  * @name:
@@ -427,6 +415,7 @@ static err_t TCPClientCallback(void* arg, struct tcp_pcb* pcb, struct pbuf* tcp_
         portEXIT_CRITICAL();
 
         pbuf_free(tcp_recv_pbuf);
+
         if (ota_over_flag)
         {
             // OTA结束复位
@@ -441,6 +430,58 @@ static err_t TCPClientCallback(void* arg, struct tcp_pcb* pcb, struct pbuf* tcp_
         return ERR_OK;
     }
 
+    return ERR_OK;
+}
+
+/**
+ * @name:
+ * @brief:
+ * @author: lzc
+ * @param {type} None
+ * @return {type} None
+ * @note: 修改记录：初次创建
+ */
+/* TCP客户端接收到数据后的数据处理回调函数 */
+static err_t DNSClientCallback(void* arg, struct tcp_pcb* pcb, struct pbuf* tcp_recv_pbuf, err_t err)
+{
+    struct pbuf* tcp_send_pbuf;
+    ip_addr_t    ota_ip;
+    char         echoString[] = "This is the DNS server content echo:\r\n";
+
+    if (tcp_recv_pbuf != NULL)
+    {
+        /* 更新接收窗口 */
+        tcp_recved(pcb, tcp_recv_pbuf->tot_len);
+        /* 将接收到的服务器内容回显*/
+        printf("***************************************************************\r\n");
+        printf("%s\r\n", echoString);
+        printf("%d\r\n", tcp_recv_pbuf->tot_len);
+        tcp_recv_pbuf_total_len = tcp_recv_pbuf->tot_len;
+        printf("%d\r\n", tcp_recv_pbuf->len);
+        printf("***************************************************************\r\n");
+
+        tcp_send_pbuf = tcp_recv_pbuf;
+        printf("***************************************************************\r\n");
+        printf("%s\r\n", tcp_send_pbuf->payload);
+        printf("***************************************************************\r\n");
+        portENTER_CRITICAL();
+        //处理函数
+        dns_get_url(tcp_send_pbuf->payload);
+        portEXIT_CRITICAL();
+
+        get_url_over_flag = true;
+        packet_over_flag  = true;
+
+        //关闭此处的DNS接收的tcp控制块
+        tcp_close(pcb);
+        pbuf_free(tcp_recv_pbuf);
+    }
+    else if (err != ERR_OK)
+    {
+        tcp_close(pcb);
+        // HTTP_Client_Initialization();
+        return ERR_OK;
+    }
     return ERR_OK;
 }
 /**
@@ -469,6 +510,38 @@ static err_t http_Client_connected(void* arg, struct tcp_pcb* pcb, err_t err)
     return ERR_OK;
 }
 /**
+ * @name:DNS_Client_connected
+ * @brief:
+ * @author: lzc
+ * @param {type} None
+ * @return {type} None
+ * @note: 修改记录：初次创建
+ */
+static err_t DNS_Client_connected(void* arg, struct tcp_pcb* pcb, err_t err)
+{
+    char send_data[600];
+    char clientString[] = "This is a new DNS client connection.\r\n";
+
+    /* 配置接收回调函数 */
+    tcp_recv(pcb, DNSClientCallback);
+    memset(send_data, 0, sizeof(send_data));
+    printf("***************************************************************\r\n");
+    /* 发送一个建立连接的问候字符串*/
+    printf("%s", clientString);
+    printf("***************************************************************\r\n");
+
+    printf("***************************************************************\r\n");
+    // 发送获取URL的HTTP请求
+    sprintf(send_data, HTTPC_REQ_URL_HOST, get_url, url_server_name);
+    while (ERR_OK != tcp_write(DNS_client_pcb, send_data, strlen(send_data), TCP_WRITE_FLAG_COPY))
+        osDelay(10);
+    printf("\r\n send_data \r\n%s\r\n", send_data);
+    printf("***************************************************************\r\n");
+    printf("connect success!!\r\n");
+
+    return ERR_OK;
+}
+/**
  * @name:create_http_connect_httpway
  * @brief:
  * @author: lzc
@@ -481,13 +554,17 @@ static void HTTP_Client_Initialization(void)
 {
 
     ip_addr_t ipaddr;
+    // char      Temp_URL[100] = { 0 };
+    // memcpy(Temp_URL, true_server_name, strlen(true_server_name));
+
     /* 将目标服务器的IP写入一个结构体，为pc机本地连接IP地址 */
-    IP4_ADDR(&ipaddr, 47, 110, 177, 54);
-    // IP4_ADDR(&ipaddr, 115, 239, 27, 176);
+    ipaddr = dns_server_local(true_server_name);
+    // IP4_ADDR(&ipaddr, 47, 110, 23, 81);
+
     /* 为tcp客户端分配一个tcp_pcb结构体    */
     tcp_client_pcb = tcp_new();
     /* 绑定本地端号和IP地址 */
-    tcp_bind(tcp_client_pcb, IP_ADDR_ANY, 0);
+    tcp_bind(tcp_client_pcb, IP_ADDR_ANY, 50);
     if (tcp_client_pcb != NULL)
     {
         /* 与目标服务器进行连接，参数包括了目标端口和目标IP */
@@ -513,21 +590,11 @@ static void HTTP_Client_Initialization(void)
  */
 void http_init(void)
 {
-    uint32_t tmp_data_test = 0;
-    HTTP_Client_Initialization();
-    /*********测试内部flash擦书，读写等操作*****************/
     //先擦除数据
-    FlashErase(BLOCK_APP2_START, 1);
-    flash_write_word(BLOCK_APP2_START + 8, 0x23456789);
-    tmp_data_test = flash_read_word(BLOCK_APP2_START + 8);
-    printf("\r\ntmp_data_test=%x\r\n", tmp_data_test);
-    printf("\r\nBLCOK_SYS_PARAM_START=%x\r\n", BLCOK_SYS_PARAM_START);
-    printf("\r\nBLOCK_APP1_START=%x\r\n", BLOCK_APP1_START);
-    printf("\r\n BLOCK_APP2_START=%x\r\n", BLOCK_APP2_START);
     FlashErase(BLOCK_APP2_START, 2);
-    // flash_write_word(BLOCK_APP2_START, 0x5555aaaa);
-    // tmp_data_test = flash_read_word(BLOCK_APP2_START);
-    // usart_printf(UART4, "\r\n BLOCK_APP2_START=%x\r\n", tmp_data_test);
+    //获取URL,获取完成之后会连接http进行OTA
+    // HTTP_Client_Initialization();
+    http_get_redir_url();
 }
 /**
  * @name:http_poll
@@ -542,8 +609,12 @@ void http_poll(void)
     char send_data[800];
     memset(send_data, 0, strlen(send_data));
     // tcp_write(pcb, clientString, strlen(clientString), 0);
-    if (xTaskGetTickCount() - tick_count > 15000)
+    if (xTaskGetTickCount() - tick_count > 15000 && get_url_over_flag)
     {
+        if (DNS_client_pcb != NULL)
+        {
+            tcp_close(DNS_client_pcb);
+        }
         /* 重新启动连接 */
         tcp_close(tcp_client_pcb);
         HTTP_Client_Initialization();
@@ -564,4 +635,49 @@ void http_poll(void)
         osDelay(100);
     }
     osDelay(1000);
+}
+/**
+ * @name:
+ * @brief:
+ * @author: lzc
+ * @param {type} None
+ * @return {type} None
+ * @note: 修改记录：初次创建
+ */
+static ip_addr_t dns_server_local(char* url)
+{
+    ip_addr_t openluat_url_dns_ipaddr;
+    err_t     err;
+    printf("START DNS !!\r\n");
+    err = netconn_gethostbyname(( char* )url, &openluat_url_dns_ipaddr);
+    if (err == ERR_OK)
+    {
+        ip_ntoa(&openluat_url_dns_ipaddr);
+        printf("   IP IS   = %s \n", ip_ntoa(&openluat_url_dns_ipaddr));
+    }
+    return openluat_url_dns_ipaddr;
+}
+/**
+ * @name: http_get_redir_url
+ * @brief: 获取重定向URL
+ * @author: lzc
+ * @param {type} None
+ * @return {type} None
+ * @note: 修改记录：初次创建
+ */
+static void http_get_redir_url()
+{
+    ip_addr_t openluat_url_dns_ipaddr;
+    printf("START GET REDIR URL !!\r\n");
+    openluat_url_dns_ipaddr = dns_server_local("iot.openluat.com");
+    packet_over_flag        = false;
+    DNS_client_pcb          = tcp_new();
+    /* 绑定本地端号和IP地址 */
+    tcp_bind(DNS_client_pcb, IP_ADDR_ANY, 40);
+    if (DNS_client_pcb != NULL)
+    {
+        /* 与目标服务器进行连接，参数包括了目标端口和目标IP */
+        tcp_connect(DNS_client_pcb, &openluat_url_dns_ipaddr, 80, DNS_Client_connected);
+        // tcp_err(DNS_client_pcb, HTTPClientConnectError);
+    }
 }

@@ -818,6 +818,11 @@
               <FileType>1</FileType>
               <FilePath>..\Middlewares\Third_Party\LwIP\src\apps\http\altcp_proxyconnect.c</FilePath>
             </File>
+            <File>
+              <FileName>dns.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\Third_Party\LwIP\src\core\dns.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

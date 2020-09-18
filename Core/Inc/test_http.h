@@ -5,12 +5,13 @@
  * @Author: lzc
  * @Date: 2020-09-12 10:17:34
  * @LastEditors: lzc
- * @LastEditTime: 2020-09-17 15:24:32
+ * @LastEditTime: 2020-09-18 09:58:14
  */
 #ifndef _TEST_HTTP_H__
 #define _TEST_HTTP_H__
 #include "MCU_Config.h"
 #include "UpdateIAP.h"
+#include "lwip/api.h"
 #include "lwip/apps/http_client.h"
 #include "lwip/apps/httpd.h"
 #include "lwip/apps/httpd_opts.h"
@@ -31,6 +32,18 @@
     "Connection: keep-alive\r\n" /* we don't support persistent connections, yet */ \
     "\r\n"
 #define HTTPC_REQ_10_HOST_FORMAT(uri, srv_name, start_bit, stop_bit) HTTPC_REQ_10_HOST, uri, HTTPC_CLIENT_AGENT, srv_name, start_bit, stop_bit
+/*
+GET /api/site/firmware_upgrade?project_key=4FXYhaL8seFmIlLoY87wgKQycW4sx4CJ&imei=862373047839743&device_key=kC5zJV6136915258&firmware_name=My_OTA&version=1.2.2&need_oss_url=1 HTTP/1.1
+Host: iot.openluat.com
+Connection: keep-alive
+*/
+#define HTTPC_REQ_URL_HOST                                                          \
+    "GET %s HTTP/1.1\r\n"        /* URI */                                          \
+    "Host: %s\r\n"               /* server name */                                  \
+    "Connection: keep-alive\r\n" /* we don't support persistent connections, yet */ \
+    "\r\n"
+#define HTTPC_REQ_URL_HOST_FORMAT(uri, srv_name) HTTPC_REQ_URL_HOST, uri, srv_name
+
 //通过结构体实现U32和u8转化
 typedef union
 {

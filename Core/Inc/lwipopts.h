@@ -90,6 +90,10 @@ extern "C" {
 
 #define TCP_INPUT_DEBUG LWIP_DBG_ON
 
+#define DNS_SERVER_ADDRESS(ipaddr) (ip4_addr_set_u32(ipaddr, ipaddr_addr("114.114.114.114")))
+
+#define LWIP_DNS 1
+
 #define TCP_MSS 1460
 
 #define TCP_WND (4 * TCP_MSS)

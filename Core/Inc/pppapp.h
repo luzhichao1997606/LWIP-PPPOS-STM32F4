@@ -5,7 +5,7 @@
  * @Author: lzc
  * @Date: 2020-09-08 09:05:13
  * @LastEditors: lzc
- * @LastEditTime: 2020-09-15 13:24:40
+ * @LastEditTime: 2020-09-17 16:29:04
  */
 #ifndef __PPP_APP_H__
 #define __PPP_APP_H__
@@ -21,6 +21,8 @@
 #include "test_http.h"
 #include "uart_driver.h"
 #include <string.h>
+
+#include "lwip/prot/dns.h"
 
 extern UART_HandleTypeDef huart6;
 extern bool               ppp_conn_success;
